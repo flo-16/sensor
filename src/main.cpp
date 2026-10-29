@@ -2,7 +2,7 @@
 
 Store store;
 Scanner scanner(store);
-Viewer viewer(store);
+Viewer viewer(store, SENSOR_NAMES);
 
 void setup() {
 	Serial.begin(115200);																										// Initialize Serial communication at 115200 baud rate
@@ -16,8 +16,8 @@ void loop() {
 	if (millis() > nextUpdate) {
 		scanner.update(watchPoint);
 		viewer.update(watchPoint);
-		Serial.println(																												// Beispielausgabe der Sensoren über die serielle Schnittstelle: 
-			"Sensor: " + String(watchPoint) + 
+		Serial.println(																												// nur Beispielausgabe über die serielle Schnittstelle: 
+			"Sensor: " + String(viewer.getBezeichnung(watchPoint)) + 
 			", Average: " + String(viewer.getItem(watchPoint, AVERAGE)) +
 			", Minimum: " + String(viewer.getItem(watchPoint, MINIMUM)) +
 			", Maximum: " + String(viewer.getItem(watchPoint, MAXIMUM)) +

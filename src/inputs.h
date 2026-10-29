@@ -10,6 +10,20 @@ class Scanner {
 };
 																							
 void Scanner::update(const WatchPoint_t sensor) {
-	float f = 11.44;																												// Hier sollte der entsprechende Sensorwert gelesen werden, z.B. von einem Temperatursensor
-	rstore.updateSensorData(sensor, f);																			// Update the sensor data in the Store class
+	float f = 0.0;																												
+	switch(sensor) {
+		case LAUBE:
+			f = 11.44;																												// hier lesen - Beispielwert für Laube
+			break;
+		case KELLER:
+			f = 12.34;																												// hier lesen - Beispielwert für Keller
+			break;
+		case BODEN:
+			f = 13.56;																												// hier lesen - Beispielwert für Boden
+			break;
+		case SCHUPPEN:
+			f = 14.78;																												// hier lesen - Beispielwert für Schuppen
+			break;
+	}
+	rstore.updateSensorData(sensor, f);																		// Update the sensor data in the Store class
 };
