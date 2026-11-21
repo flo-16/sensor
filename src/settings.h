@@ -20,6 +20,8 @@ constexpr uint32_t LONG_UPDATE_INTERVAL = 1000; 												// 1 second - Pause 
 constexpr uint8_t MAX_AVERAGE = 32; 																		// Maximale Anzahl zur Berechnung von Durchschnittswerten
 constexpr uint8_t MAX_STRING_LENGTH = 16; 															// Maximale Länge der Strings für die Anzeige																							
 
+constexpr uint8_t MAX_TREND_LENGTH = 16; 																// Maximale Länge der Trend-Daten für die Anzeige
+
 // Enum-Typen für die Sensoren und Messungen, die in der Schleife durchlaufen werden
 typedef enum {																													// Nummerische Werte für die Sensoren, die in der Schleife durchlaufen werden
 	LAUBE = 0,
@@ -37,6 +39,7 @@ typedef enum {																													// Nummerische Werte für die Messung
 } Measured_t;
 
 // Vorwärtsdeklaration der Klassen - schützt vor zirkulären Abhängigkeiten
+class Trend;
 class Store;
 class Scanner;
 class Viewer;
