@@ -16,6 +16,7 @@ constexpr pchar SENSOR_NAMES[SENSORS] = {																// Array mit den Namen 
 
 constexpr uint32_t SHORT_UPDATE_INTERVAL = 50; 													// 50 milliseconds - Pause zwischen den einzelnen Messungen der Sensoren
 constexpr uint32_t LONG_UPDATE_INTERVAL = 1000; 												// 1 second - Pause nach dem Lesen aller Sensoren
+constexpr uint32_t TREND_UPDATE_INTERVAL = 60000; 											// 1 Minute - Pause für  Trend-Daten(links shift)
 
 constexpr uint8_t MAX_AVERAGE = 32; 																		// Maximale Anzahl zur Berechnung von Durchschnittswerten
 constexpr uint8_t MAX_STRING_LENGTH = 16; 															// Maximale Länge der Strings für die Anzeige																							

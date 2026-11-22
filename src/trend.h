@@ -27,7 +27,6 @@ void Trend::addTrendData(const float v0, const float v1, const float v2, const f
 			trendData[sensorLoop][i] = trendData[sensorLoop][i + 1];
 		}
 		trendData[sensorLoop][MAX_TREND_LENGTH - 1] = newValues[sensorLoop];
-
 	}
 }	
 

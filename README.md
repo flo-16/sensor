@@ -1,5 +1,5 @@
 # Sensor
-Version: 2.0.0<br>
+Version: 2.0.1<br>
 Ein Applications-Fragment das Daten aufnimmt und für die weitere Bearbeitung bereit stellt.<br>
 Die konkreten Ein- und Ausgabe Funktionen sind nicht implementiert, hier muss eine Erweiterung erfolgen.<br>
 Die einzelnen Files beinhalten:<br>
@@ -8,9 +8,9 @@ Die einzelnen Files beinhalten:<br>
 #### src/settings.h
 	Globale Konstanten, Typen usw.
 	Tipp: Eine exakte Übereinstimmung zwischen 'SENSOR_NAMES' und 'WatchPoint_t' ist zwar nicht erforderlich, aber hilfreich.
-#### src/trend.h - Klasse Trend
-  Hinzugekommen in Version 2
-	Aufbau einer Historie. Tipp: Die Durchschnittswete aus Store übergeben,
+#### src/trend.h - Klasse Trend  
+	Aufbau einer Reihe von Messpunkten.
+	Diese können dann z.B. als Diagramm ausgegeben werden.
 #### src/stores.h - Klasse Store
 	Sammlung aller Daten mit implementierten allgemeinen Ein- und Ausgabe Funktionen in der Klasse.
 	Das Datenformat ist 'float'. Folgende Werte werden gespeichert: Aktuell, Minimum, Maximum und Durchschnitt.
@@ -23,8 +23,10 @@ Die einzelnen Files beinhalten:<br>
 	Die Ausgabe erfogt im Format: Zeiger auf Char. 
 	Beispiel für die Ausgabe über die serielle Schnittstelle in main.cpp.
 	Für eigene Anpassungen die update-Funktion benutzen!
-	Falls der 'f-Spezifer' nicht funktioniert(Arduino und co.) sollte die alterntive Methode(dtostrf) benutzt werden.
+	Falls der 'f-Spezifer' nicht funktioniert(Arduino und co.) sollte als alterntive Methode(dtostrf) benutzt werden.
 ## Anmerkung
 	Das Programm wurde wegen fehlenden In/Out Modulen nie geflasht.
 	Aber der Compiler hat keinerlei Einwände, also: Augen zu und durch!
+	Für jede Erweiterung gilt die uralte Weisheit:
+# Mist rein - Mist raus	
 	Ich wünsche viel Erfolg bei den Anpassungen und im Einsatz.

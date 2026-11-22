@@ -3,7 +3,9 @@
 Trend trend;
 Store store;
 Scanner scanner(store);
-Viewer viewer(store, SENSOR_NAMES);
+Viewer viewer(trend, store, SENSOR_NAMES);
+
+void handler(const uint32_t ticks);
 
 void setup() {
 	Serial.begin(115200);																										// Initialize Serial communication at 115200 baud rate
@@ -12,49 +14,36 @@ void setup() {
 }
 
 void loop() {
-	static WatchPoint_t watchPoint = LAUBE;
-	static uint32_t nextUpdate = 0;
-	if (millis() > nextUpdate) {
-		scanner.update(watchPoint);
-		viewer.update(watchPoint);
-		Serial.println(																												// nur Beispielausgabe über die serielle Schnittstelle: 
-			"Sensor: " + String(viewer.getBezeichnung(watchPoint)) + 
-			", Average: " + String(viewer.getItem(watchPoint, AVERAGE)) +
-			", Minimum: " + String(viewer.getItem(watchPoint, MINIMUM)) +
-			", Maximum: " + String(viewer.getItem(watchPoint, MAXIMUM)) +
-			", Actual: " + String(viewer.getItem(watchPoint, ACTUAL))
-		);
-	}
-	watchPoint = static_cast<WatchPoint_t>(watchPoint + 1);
-	nextUpdate = millis() + SHORT_UPDATE_INTERVAL;
-	if (watchPoint == NO_SENSOR) {
-		watchPoint = LAUBE;
-		nextUpdate += LONG_UPDATE_INTERVAL;
-	}
-/* So kann man die Trend-Daten verwenden oder anzuzeigen.
-Speichern: Die Methode alle Stunde aufzurufen, um die Durchschnittswerte der Sensoren zu speichern:
-
- 	trend.addTrendData(					
-		store.getSensorData(LAUBE, AVERAGE),
-		store.getSensorData(KELLER, AVERAGE),
-		store.getSensorData(BODEN, AVERAGE),
-		store.getSensorData(SCHUPPEN, AVERAGE)
-	);
-
-Auslesen: Die Methode alle Stunde aufzurufen, um die Trend-Daten auszulesen und anzuzeigen.
-
-	Serial.println(
-		"Trend Data: " +
-		String(trend.getTrendData(LAUBE, 0)) + ", " +
-		String(trend.getTrendData(KELLER, 0)) + ", " +
-		String(trend.getTrendData(BODEN, 0)) + ", " +
-		String(trend.getTrendData(SCHUPPEN, 0))
-	);
-	
-Für ein Diagramm oder eine grafische Darstellung kann man die Trend-Daten in einem Array speichern(index)
-und dann die Werte für die Anzeige verwenden.	Das muss dann in der Klasse Viewer implementiert werden.
-*/
-
+	handler(millis());
 	delay(5);
 }
+
+void handler(const uint32_t ticks) {
+	static WatchPoint_t wpStore = LAUBE;
+	static uint32_t nextStore = 0;
+	static uint32_t nextTrend = 0;
+	if (ticks > nextStore) {
+		scanner.update(wpStore);
+		viewer.update(wpStore);
+		wpStore = static_cast<WatchPoint_t>(wpStore + 1);
+		nextStore = ticks + SHORT_UPDATE_INTERVAL;
+		if (wpStore == NO_SENSOR) {
+			// Hier Ausgabe der Store-Daten oder andere Aktionen, die nach dem Lesen aller Sensoren durchgeführt werden sollen
+			// z.B. Ausgabe der Daten auf dem Serial Monitor store.viewer(); - nicht implementiert!!!
+			wpStore = LAUBE;
+			nextStore += LONG_UPDATE_INTERVAL;
+		}
+	}
+	if (ticks > nextTrend) {
+		trend.addTrendData(
+			store.getSensorData(LAUBE, ACTUAL),
+			store.getSensorData(KELLER, ACTUAL),
+			store.getSensorData(BODEN, ACTUAL),
+			store.getSensorData(SCHUPPEN, ACTUAL)
+		);
+		nextTrend = ticks + TREND_UPDATE_INTERVAL;
+		// Hier Ausgabe der Trend-Daten oder andere Aktionen, die nach dem Lesen aller Sensoren durchgeführt werden sollen
+	}
+};
+
 

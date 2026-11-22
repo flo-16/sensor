@@ -3,11 +3,12 @@
 
 class Viewer {
 	private:
+		Trend& rtrend;																													// Referenz auf die Trend-Klasse
 		Store& rstore;																													// Referenz auf die Store-Klasse
 		const pchar* bez;
 		char item[SENSORS][MEASUREMENTS][MAX_STRING_LENGTH];										// 3D Array, um die Daten in String zu speichern
 	public:
-		Viewer(Store& storeRef, const pchar* p1) : rstore(storeRef), bez(p1), item() {} 									// Konstruktor, der eine Referenz auf die Store-Klasse entgegennimmt
+		Viewer(Trend& trendRef, Store& storeRef, const pchar* p1) : rtrend(trendRef), rstore(storeRef), bez(p1), item() {} 									// Konstruktor, der eine Referenz auf die Store-Klasse entgegennimmt
 		void update(const WatchPoint_t sensor);
 		void convertToString(const WatchPoint_t sensor);
 		pchar getItem(const WatchPoint_t sensor, const Measured_t measurement) {
