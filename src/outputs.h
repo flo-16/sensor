@@ -5,33 +5,21 @@ class Viewer {
 	private:
 		Trend& rtrend;																													// Referenz auf die Trend-Klasse
 		Store& rstore;																													// Referenz auf die Store-Klasse
-		const pchar* bez;
-		char item[SENSORS][MEASUREMENTS][MAX_STRING_LENGTH];										// 3D Array, um die Daten in String zu speichern
+		char buffer[MAX_BUFFER_LENGTH];																					// Buffer für die Anzeige
 	public:
-		Viewer(Trend& trendRef, Store& storeRef, const pchar* p1) : rtrend(trendRef), rstore(storeRef), bez(p1), item() {} 									// Konstruktor, der eine Referenz auf die Store-Klasse entgegennimmt
-		void update(const WatchPoint_t sensor);
-		void convertToString(const WatchPoint_t sensor);
-		pchar getItem(const WatchPoint_t sensor, const Measured_t measurement) {
-			return const_cast<const char*>(item[sensor][measurement]);
-		}
-		pchar getBezeichnung(const WatchPoint_t sensor) {
-			return bez[sensor];
-		}
+		Viewer(Trend& trendRef, Store& storeRef) : rtrend(trendRef), rstore(storeRef), buffer() {} 									// Konstruktor, der eine Referenz auf die Store-Klasse entgegennimmt
+		pchar getStoreMenue(const uint8_t sensor);
 };
 
-void Viewer::update(const WatchPoint_t sensor) {														
-	convertToString(sensor);
-	// hier können weitere Aktionen hinzugefügt werden, z.B. das Senden der Daten an ein Display oder eine andere Schnittstelle
-};
-
-void Viewer::convertToString(const WatchPoint_t sensor) {
+pchar Viewer::getStoreMenue(const uint8_t sensor) {
+	char line[32];
+	buffer[0] = '\0'; 			
+	sprintf(buffer, "%s\n", SENSOR_NAMES[sensor]); 																// Add sensor name to the buffer
 	for (Measured_t measurement = AVERAGE; measurement <= ACTUAL; measurement = static_cast<Measured_t>(measurement + 1)) {
+		line[0] = '\0'; 	
 		float f = rstore.getSensorData(sensor, measurement);
-		snprintf(item[sensor][measurement], sizeof(item[sensor][measurement]), "%.2f", f);
-/* Alternative Methode zur Umwandlung von float in String, falls snprintf() nicht direkt mit float umgehen kann
- 		char floatStr[MAX_STRING_LENGTH];
-		dtostrf(f, MAX_STRING_LENGTH, 2, floatStr);
-		snprintf(item[sensor][measurement], sizeof(item[sensor][measurement]), "%s", floatStr);
-*/		
+		sprintf(line, "%-16s: %6.2f V\n", MPNAMES[measurement], f);							// alternativ: dtostrf
+		strcat(buffer, line);
 	}
+	return const_cast<const char*>(buffer);
 }

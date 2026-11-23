@@ -12,8 +12,8 @@ class Trend {
 			{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f} 
 		} {}	
 		void addTrendData(const float v0, const float v1, const float v2, const float v3);
-		float getTrendData(const WatchPoint_t sensorLoop, const uint8_t index) const {
-			uint8_t h = static_cast<WatchPoint_t> (sensorLoop);
+		float getTrendData(const uint8_t sensorLoop, const uint8_t index) const {
+			uint8_t h = static_cast<uint8_t> (sensorLoop);
 			return trendData[h][index];
 		}																					
 };

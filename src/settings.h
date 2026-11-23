@@ -8,29 +8,22 @@ typedef const char* pchar;
 constexpr uint8_t SENSORS = 4;																					// Anzahl der Sensoren - Messpunkte
 constexpr uint8_t MEASUREMENTS = 4;																			// Anzahl der gespeicherten Werte pro Sensor
 constexpr pchar SENSOR_NAMES[SENSORS] = {																// Array mit den Namen der Sensoren für die Anzeige)
-	"LAUBE",
-	"KELLER",
-	"BODEN",
-	"SCHUPPEN"
+	"LAUBE", "KELLER", "BODEN", "SCHUPPEN"
 }; 	
+constexpr pchar MPNAMES[MEASUREMENTS] = {
+	"Durchschnitt", "Minimum", "Maximum", "Aktuell" 
+};
 
+constexpr uint8_t MAX_AVERAGE = 32; 																		// Maximale Anzahl zur Berechnung von Durchschnittswerten
+
+// Zeitkonstanten
 constexpr uint32_t SHORT_UPDATE_INTERVAL = 50; 													// 50 milliseconds - Pause zwischen den einzelnen Messungen der Sensoren
 constexpr uint32_t LONG_UPDATE_INTERVAL = 1000; 												// 1 second - Pause nach dem Lesen aller Sensoren
 constexpr uint32_t TREND_UPDATE_INTERVAL = 60000; 											// 1 Minute - Pause für  Trend-Daten(links shift)
-
-constexpr uint8_t MAX_AVERAGE = 32; 																		// Maximale Anzahl zur Berechnung von Durchschnittswerten
-constexpr uint8_t MAX_STRING_LENGTH = 16; 															// Maximale Länge der Strings für die Anzeige																							
-
+constexpr uint32_t BUTTON_BLOCK_TIME = 200; 														// 200 milliseconds - Blockzeit für den Taster
+// max. Stringlängen																		
 constexpr uint8_t MAX_TREND_LENGTH = 16; 																// Maximale Länge der Trend-Daten für die Anzeige
-
-// Enum-Typen für die Sensoren und Messungen, die in der Schleife durchlaufen werden
-typedef enum {																													// Nummerische Werte für die Sensoren, die in der Schleife durchlaufen werden
-	LAUBE = 0,
-	KELLER,
-	BODEN,
-	SCHUPPEN,
-	NO_SENSOR																															// Stopper - nicht ändern, da er als Abbruchbedingung in der Schleife dient
-} WatchPoint_t;
+constexpr uint8_t MAX_BUFFER_LENGTH = 160; 															// Maximale Länge des Buffers für die Anzeige
 
 typedef enum {																													// Nummerische Werte für die Messungen, die in der Schleife durchlaufen werden
 	AVERAGE = 0,

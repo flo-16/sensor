@@ -7,13 +7,13 @@ class Store {
 		uint8_t measurementCount[SENSORS]; 																		// Array to keep track of the number of measurements for each sensor
 	public:
 		Store() : sensorData{{0.0f, 99.9f, 0.0f, 0.0f}, {0.0f, 99.9f, 0.0f, 0.0f}, {0.0f, 99.9f, 0.0f, 0.0f}, {0.0f, 99.9f, 0.0f, 0.0f}}, measurementCount{0} {} 	
-		void updateSensorData(const WatchPoint_t sensor, const float newValue);	
-		float getSensorData(const WatchPoint_t sensor, const Measured_t measurement) const {
+		void updateSensorData(const uint8_t sensor, const float newValue);	
+		float getSensorData(const uint8_t sensor, const Measured_t measurement) const {
 			return sensorData[sensor][measurement];
 		}																					
 };
 
-void Store::updateSensorData(const WatchPoint_t sensor, const float newValue) {
+void Store::updateSensorData(const uint8_t sensor, const float newValue) {
 	// Update the actual value
 	sensorData[sensor][ACTUAL] = newValue;
 

@@ -3,7 +3,7 @@
 Trend trend;
 Store store;
 Scanner scanner(store);
-Viewer viewer(trend, store, SENSOR_NAMES);
+Viewer viewer(trend, store);
 
 void handler(const uint32_t ticks);
 
@@ -19,31 +19,41 @@ void loop() {
 }
 
 void handler(const uint32_t ticks) {
-	static WatchPoint_t wpStore = LAUBE;
+	static uint8_t wpStore = 0;
 	static uint32_t nextStore = 0;
 	static uint32_t nextTrend = 0;
+	static uint32_t buttonBlock = 0;
+
 	if (ticks > nextStore) {
 		scanner.update(wpStore);
-		viewer.update(wpStore);
-		wpStore = static_cast<WatchPoint_t>(wpStore + 1);
+		wpStore++;
 		nextStore = ticks + SHORT_UPDATE_INTERVAL;
-		if (wpStore == NO_SENSOR) {
-			// Hier Ausgabe der Store-Daten oder andere Aktionen, die nach dem Lesen aller Sensoren durchgeführt werden sollen
-			// z.B. Ausgabe der Daten auf dem Serial Monitor store.viewer(); - nicht implementiert!!!
-			wpStore = LAUBE;
+		if (wpStore == SENSORS) {
+			wpStore = 0;
 			nextStore += LONG_UPDATE_INTERVAL;
 		}
 	}
+
 	if (ticks > nextTrend) {
 		trend.addTrendData(
-			store.getSensorData(LAUBE, ACTUAL),
-			store.getSensorData(KELLER, ACTUAL),
-			store.getSensorData(BODEN, ACTUAL),
-			store.getSensorData(SCHUPPEN, ACTUAL)
+			store.getSensorData(0, ACTUAL),
+			store.getSensorData(1, ACTUAL),
+			store.getSensorData(2, ACTUAL),
+			store.getSensorData(3, ACTUAL)
 		);
 		nextTrend = ticks + TREND_UPDATE_INTERVAL;
-		// Hier Ausgabe der Trend-Daten oder andere Aktionen, die nach dem Lesen aller Sensoren durchgeführt werden sollen
 	}
+
+	if (buttonBlock > 0 && ticks > buttonBlock) { buttonBlock = 0; }
+	// Der Button wird nur alle BUTTON_BLOCK_TIME Millisekunden ausgewertet, um ein Prellen zu vermeiden
+	// Digital input 0 is used for the button, if it is pressed (LOW) and the buttonBlock is not active, print the sensor data to Serial	
+	if (!(digitalRead(0)) || (buttonBlock)) {			
+		buttonBlock = ticks + BUTTON_BLOCK_TIME;	
+		for (uint8_t i = 0; i < SENSORS; i++) {
+			Serial.println(viewer.getStoreMenue(i));
+		}
+	}
+
 };
 
 
