@@ -1,6 +1,9 @@
 #pragma once
 #include <Arduino.h>
 
+// Hardware-Pins
+#define PIN_BUTTON_SERIELL 21
+
 // Zeiger auf konstante Zeichenkette
 typedef const char* pchar; 																							
 
@@ -15,6 +18,7 @@ constexpr pchar MPNAMES[MEASUREMENTS] = {
 };
 
 constexpr uint8_t MAX_AVERAGE = 32; 																		// Maximale Anzahl zur Berechnung von Durchschnittswerten
+constexpr uint8_t MAX_DIAGRAMM_POINTS = 16; 														// Maximale Anzahl zur Speicherung von Trend-Daten
 
 // Zeitkonstanten
 constexpr uint32_t SHORT_UPDATE_INTERVAL = 50; 													// 50 milliseconds - Pause zwischen den einzelnen Messungen der Sensoren

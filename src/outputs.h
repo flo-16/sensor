@@ -5,10 +5,12 @@ class Viewer {
 	private:
 		Trend& rtrend;																													// Referenz auf die Trend-Klasse
 		Store& rstore;																													// Referenz auf die Store-Klasse
+		uint8_t currentSensor;																									// Aktuell ausgewählter Sensor
 		char buffer[MAX_BUFFER_LENGTH];																					// Buffer für die Anzeige
 	public:
-		Viewer(Trend& trendRef, Store& storeRef) : rtrend(trendRef), rstore(storeRef), buffer() {} 									// Konstruktor, der eine Referenz auf die Store-Klasse entgegennimmt
+		Viewer(Trend& trendRef, Store& storeRef) : rtrend(trendRef), rstore(storeRef), currentSensor(0), buffer() {} 									// Konstruktor, der eine Referenz auf die Store-Klasse entgegennimmt
 		pchar getStoreMenue(const uint8_t sensor);
+		void setDiagramm();																											// Funktion zum Setzen des Diagramms
 };
 
 pchar Viewer::getStoreMenue(const uint8_t sensor) {
@@ -23,3 +25,15 @@ pchar Viewer::getStoreMenue(const uint8_t sensor) {
 	}
 	return const_cast<const char*>(buffer);
 }
+
+void Viewer::setDiagramm() {
+	// Currently, this function is a placeholder for future implementation.
+/* 
+	for (uint8_t i = 0; i < MAX_DIAGRAMM_POINTS; i++) {
+		float v = rtrend.getTrendData(currentSensor, i); 																// Get the actual sensor data for each 
+		einzelne Punkte als Diagramm darstellen - hier nur als Beispiel
+	}
+*/	
+	uint8_t h = currentSensor++;
+	currentSensor %= SENSORS; 																							// Cycle through sensors
+};
