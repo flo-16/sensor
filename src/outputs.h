@@ -1,16 +1,19 @@
 #pragma once
 #include "inputs.h"
 
+constexpr uint8_t MAX_BUFFER_LENGTH = 160; 																	// Maximale Länge des temp. Buffers
+
 class Viewer {
 	private:
-		Trend& rtrend;																													// Referenz auf die Trend-Klasse
 		Store& rstore;																													// Referenz auf die Store-Klasse
 		uint8_t currentSensor;																									// Aktuell ausgewählter Sensor
 		char buffer[MAX_BUFFER_LENGTH];																					// Buffer für die Anzeige
-	public:
-		Viewer(Trend& trendRef, Store& storeRef) : rtrend(trendRef), rstore(storeRef), currentSensor(0), buffer() {} 									// Konstruktor, der eine Referenz auf die Store-Klasse entgegennimmt
 		pchar getStoreMenue(const uint8_t sensor);
-		void setDiagramm();																											// Funktion zum Setzen des Diagramms
+		uint8_t normalize(float value);																		// y-Koordinate for diagramm
+	public:
+		Viewer(Store& storeRef) : rstore(storeRef), currentSensor(0), buffer() {} 	// Konstruktor, der eine Referenz auf die Store-Klasse entgegennimmt
+		void seriellPrint();																												// Serielle Ausgabe der aktuellen Messwerte für alle Sensoren
+		void setDiagramm(const uint8_t sensor);																			// Funktion zum Setzen des Diagramms
 };
 
 pchar Viewer::getStoreMenue(const uint8_t sensor) {
@@ -26,14 +29,25 @@ pchar Viewer::getStoreMenue(const uint8_t sensor) {
 	return const_cast<const char*>(buffer);
 }
 
-void Viewer::setDiagramm() {
-	// Currently, this function is a placeholder for future implementation.
-/* 
-	for (uint8_t i = 0; i < MAX_DIAGRAMM_POINTS; i++) {
-		float v = rtrend.getTrendData(currentSensor, i); 																// Get the actual sensor data for each 
-		einzelne Punkte als Diagramm darstellen - hier nur als Beispiel
+uint8_t Viewer::normalize(float value) {
+	if (value < 0.0f) value = 0.0f;
+	if (value > 16.0f) value = 100;
+	uint8_t normalizedValue = static_cast<uint8_t>((value / 16.0f) * 100.0f);
+	return normalizedValue;
+}
+
+void Viewer::seriellPrint() {
+	for (uint8_t i = 0; i < SENSORS; i++) { 
+		Serial.println(getStoreMenue(i));
 	}
-*/	
-	uint8_t h = currentSensor++;
-	currentSensor %= SENSORS; 																							// Cycle through sensors
-};
+}
+
+void Viewer::setDiagramm(const uint8_t sensor) {
+	if (sensor >= SENSORS) return;
+	for(uint8_t i = 0; i < BASE; i++) {
+		float value = rstore.getHistoricalData(sensor, i);
+		uint8_t normalizedValue = normalize(value);
+		// OLED setPixel(i, normalizedValue);  // Set pixel on OLED display (this line is commented out as a placeholder)
+	}
+	// Currently, this function is a placeholder for future implementation.
+}
