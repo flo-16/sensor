@@ -2,14 +2,17 @@
 #include "inputs.h"
 
 constexpr uint8_t MAX_BUFFER_LENGTH = 160; 																	// Maximale Länge des temp. Buffers
-
+constexpr float LIMIT_MIN = 8.0f; 																					// Minimum Limit for normalization
+constexpr float LIMIT_MAX = LIMIT_MIN + 8.0f; 															// Maximum Limit Range für Ausgabe: 0 .. 8V
+constexpr uint8_t NORMALIZED_MIN = 63; 																			// Minimum normalized value for diagram
+constexpr uint8_t NORMALIZED_MAX = 0; 																			// Maximum normalized value for diagram
 class Viewer {
 	private:
 		Store& rstore;																													// Referenz auf die Store-Klasse
 		uint8_t currentSensor;																									// Aktuell ausgewählter Sensor
 		char buffer[MAX_BUFFER_LENGTH];																					// Buffer für die Anzeige
 		pchar getStoreMenue(const uint8_t sensor);
-		uint8_t normalize(float value);																		// y-Koordinate for diagramm
+		uint8_t normalize(const float value);																		// y-Koordinate for diagramm
 	public:
 		Viewer(Store& storeRef) : rstore(storeRef), currentSensor(0), buffer() {} 	// Konstruktor, der eine Referenz auf die Store-Klasse entgegennimmt
 		void seriellPrint();																												// Serielle Ausgabe der aktuellen Messwerte für alle Sensoren
@@ -29,11 +32,16 @@ pchar Viewer::getStoreMenue(const uint8_t sensor) {
 	return const_cast<const char*>(buffer);
 }
 
-uint8_t Viewer::normalize(float value) {
-	if (value < 0.0f) value = 0.0f;
-	if (value > 16.0f) value = 100;
-	uint8_t normalizedValue = static_cast<uint8_t>((value / 16.0f) * 100.0f);
-	return normalizedValue;
+uint8_t Viewer::normalize(const float value) {
+	if (value == 0.0f) return NORMALIZED_MIN; 					// If value is below minimum limit, return minimum normalized value
+	float f = value - LIMIT_MIN; 												// Range LIMIT_MIN .. LIMIT_MAX -> 0 .. 8V
+	if (f < 0.0f) f = 0.0f;
+	if (f > LIMIT_MAX) f = LIMIT_MAX;
+	// Konvertiere den Wert in einen Bereich von 0 bis 800 (für 8V) und
+	// skaliere ihn auf 63 bis 0 (für die Anzeige auf dem Diagramm)
+	// 63 ist der niedrigste Punkt auf dem Diagramm, er entspricht 0V.
+	// 0 ist der höchste Punkt auf dem Diagramm, er entspricht 8V.
+	return static_cast<uint8_t>((f / LIMIT_MAX) * (NORMALIZED_MIN - NORMALIZED_MAX) + NORMALIZED_MAX);
 }
 
 void Viewer::seriellPrint() {
@@ -44,10 +52,8 @@ void Viewer::seriellPrint() {
 
 void Viewer::setDiagramm(const uint8_t sensor) {
 	if (sensor >= SENSORS) return;
-	for(uint8_t i = 0; i < BASE; i++) {
-		float value = rstore.getHistoricalData(sensor, i);
-		uint8_t normalizedValue = normalize(value);
-		// OLED setPixel(i, normalizedValue);  // Set pixel on OLED display (this line is commented out as a placeholder)
+	for(uint8_t x = 0; x < BASE; x++) {
+		uint8_t y = normalize(rstore.getHistoricalData(sensor, x));
+		// OLED setPixel(x, y);  // Set pixel on OLED display (this line is commented out as a placeholder)
 	}
-	// Currently, this function is a placeholder for future implementation.
 }
