@@ -7,12 +7,12 @@
 // Zeiger auf konstante Zeichenkette
 typedef const char* pchar; 																							
 
-// 864000000 milliseconds = 24 hours
-constexpr uint8_t BASE = 96;																						// Historie - Messwerte in 24 Stunden
-constexpr uint32_t BASE_INTERVAL = 900000; 															// 15 Minuten - Zeitintervall für die Historie
+constexpr uint8_t MAX_SAVE = 96;																				// OLED/Array - Maximale X-Position für das Diagramm
+
+constexpr uint32_t SAVE_INTERVAL = 60000;																// Historie - Messwerte ablegen alle 60 Sekunden
 constexpr uint32_t BUTTON_BLOCK_TIME = 100; 														// 100 milliseconds - Blockzeit für den Taster
-constexpr uint8_t MAX_AVERAGE = 10; 																		// Maximale Anzahl zur Berechnung von Durchschnittswerten
-constexpr uint32_t SHORT_UPDATE_INTERVAL = 50; 													// 50 milliseconds - Pause zwischen den einzelnen Messungen der Sensoren
+constexpr uint8_t MAX_AVERAGE = 60; 																		// Maximale Anzahl zur Berechnung von Durchschnittswerten
+constexpr uint32_t UPDATE_INTERVAL = 250; 															// 250 milliseconds - Pause zwischen den einzelnen Messungen der Sensoren
 
 // Konstanten für die Anzahl der Sensoren, Messungen und die Namen der Sensoren
 constexpr uint8_t SENSORS = 4;																					// Anzahl der Sensoren - Messpunkte

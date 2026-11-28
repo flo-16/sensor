@@ -1,10 +1,11 @@
 # Sensor
-### Version: 3.0.0  
+### Version: 4.0.0  
 &emsp;Ein Applications-Fragment das Daten aufnimmt und für die weitere Bearbeitung bereit stellt.   
 &emsp;Die konkreten Eingabe Funktionen sind nicht implementiert, hier muss eine Erweiterung erfolgen.    
 &emsp;Die Ausgabe der momentanen Werte erfolgt über die serielle Schnittstelle.    
-&emsp;Der Button zur Auslöse der seriellen Schnittstelle ist implementiert.    
-&emsp;Die einzelnen Files beinhalten:     
+&emsp;Der Button zur Auslöse der seriellen Schnittstelle ist implementiert.   
+&emsp;Die Historie wird jetzt im Array links geschiftet. 
+### Inhalt     
 #### src/main.cpp
 &emsp;Wie immer: Initialisierung der App und der Klasseninstanzen.<br>
 #### src/settings.h

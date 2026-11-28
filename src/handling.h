@@ -10,9 +10,11 @@ class Handler {
 		uint32_t buttonBlock;													// Zeitstempel für den Button-Block
 		ButtonState_t buttonState;										// Aktueller Zustand des Tasters
 		uint32_t nextScan;														// Zeitstempel für den nächsten Scan
+		uint32_t nextSave;														// Zeitstempel für den nächsten Speichervorgang
 		uint8_t actSensor;														// Aktuell ausgewählter Sensor
-		uint8_t counter;															// Zähler für die Anzahl der vollständigen Scans
 		void buttonHandler(const uint32_t ticks);			// Funktion zur Handhabung des Tasters
+		void saveHistoricalData();
+		void getActualData();
 	public:
 		Handler(Store& storeRef, Scanner& scannerRef, Viewer& viewerRef) : 
 			rstore(storeRef), rscanner(scannerRef), rviewer(viewerRef), menue(0), buttonBlock(0), buttonState(NONE) { initialize(); } 								
@@ -22,32 +24,23 @@ class Handler {
 
 void Handler::initialize() {
 	nextScan = 0;																		// Initialize the next scan time
+	nextSave = 0;																		// Initialize the next save time
 	actSensor = 0;																	// Initialize the active sensor index
-	counter = 0;																		// Initialize the counter for the number of complete scans
 	buttonBlock = 0;																// Initialize the button block time
 	buttonState = NONE;															// Initialize the button state
 }
 
 void Handler::update(const uint32_t ticks) {
+	if(!nextSave) nextSave = ticks + SAVE_INTERVAL; // Set the next save time if it hasn't been set yet
 
-	if(ticks > nextScan) {
-		rscanner.update(actSensor); 									// Update the Scanner class for the active sensor
-		actSensor++;																	// Move to the next sensor
-		if(actSensor == SENSORS) {										// If all sensors have been scanned, reset the active sensor index and set the next scan time for the next cycle
-			actSensor = 0;
-			nextScan += ticks + BASE_INTERVAL; 					// Set the next scan time for the next cycle after all sensors have been scanned
-			counter++;																	// Increment the counter for the number of complete scans
-		}	
-		else {
-			nextScan = ticks + SHORT_UPDATE_INTERVAL;		// Set the next scan time
-		}
+	if(ticks > nextSave) {
+		saveHistoricalData(); 													// Save historical data if the current time exceeds the next save time
+		nextSave += SAVE_INTERVAL; 											// Set the next save time
 	}
 
-	if(counter == BASE) {														// If the counter reaches the BASE value:
-		rstore.addHistoricalData(); 									// Add historical data to the Store class
-		rstore.historyDataToFile(); 									// Write historical data to file
-		rstore.resetSensorData(); 										// Reset the sensor data in the Store class
-		initialize();
+	if(ticks > nextScan) {
+		getActualData(); 																// Get actual data from the sensors if the current time exceeds the next scan time
+		nextScan += UPDATE_INTERVAL; 										// Set the next scan time for the next cycle
 	}
 
 	buttonHandler(ticks); 														// Call the button handler function to check for button presses
@@ -59,7 +52,7 @@ void Handler::buttonHandler(const uint32_t ticks) {
 	if ((digitalRead(BUTTON_PIN) == LOW) && (buttonState == NONE)) {
 		buttonState = PRESS; 
 		buttonBlock = ticks + BUTTON_BLOCK_TIME; 				// Button wurde gedrückt, Blockzeit setzen
-	}	// Button wurde gedrückt
+	}	
 
 	if ((buttonBlock > 0) && (ticks > buttonBlock) && (buttonState == PRESS)) {
 		buttonState = (digitalRead(BUTTON_PIN) == LOW) ? LONG : SHORT; 		// Button wurde kurz/lang gedrückt
@@ -91,9 +84,21 @@ void Handler::buttonHandler(const uint32_t ticks) {
 	};
 	
 	if (buttonState == LONG) {
-		rstore.resetSensorData(); 										// Reset the sensor data in the Store class
+		rstore.initialize(); 										// Reset the sensor data in the Store class
 		initialize(); 																// Reinitialize the Handler class
 	}
+}
+
+void Handler::saveHistoricalData() {
+	rstore.addHistoricalData(); 									// Add historical data to the Store class
+	rstore.historyDataToFile(); 									// Write historical data to file
+	rstore.resetSensorData(); 										// Reset the sensor data in the Store class
+}
+
+void Handler::getActualData() {
+	rscanner.update(actSensor); 									// Update the Scanner class for the active sensor
+	actSensor++;																	// Move to the next sensor
+	actSensor %= SENSORS; 												// Wrap around the active sensor index if it exceeds the number of sensors
 }
 
 

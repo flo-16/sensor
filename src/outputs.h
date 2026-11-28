@@ -4,8 +4,8 @@
 constexpr uint8_t MAX_BUFFER_LENGTH = 160; 																	// Maximale Länge des temp. Buffers
 constexpr float LIMIT_MIN = 8.0f; 																					// Minimum Limit for normalization
 constexpr float LIMIT_MAX = LIMIT_MIN + 8.0f; 															// Maximum Limit Range für Ausgabe: 0 .. 8V
-constexpr uint8_t NORMALIZED_MIN = 63; 																			// Minimum normalized value for diagram
-constexpr uint8_t NORMALIZED_MAX = 0; 																			// Maximum normalized value for diagram
+constexpr int8_t NORMALIZED_MIN = 63; 																			// Minimum normalized value for diagram
+constexpr int8_t NORMALIZED_MAX = 0; 																				// Maximum normalized value for diagram
 class Viewer {
 	private:
 		Store& rstore;																													// Referenz auf die Store-Klasse
@@ -52,7 +52,7 @@ void Viewer::seriellPrint() {
 
 void Viewer::setDiagramm(const uint8_t sensor) {
 	if (sensor >= SENSORS) return;
-	for(uint8_t x = 0; x < BASE; x++) {
+	for(uint8_t x = 0; x < MAX_SAVE; x++) {
 		uint8_t y = normalize(rstore.getHistoricalData(sensor, x));
 		// OLED setPixel(x, y);  // Set pixel on OLED display (this line is commented out as a placeholder)
 	}

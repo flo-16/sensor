@@ -1,18 +1,16 @@
 #pragma once
-//#include "trend.h"
 #include "settings.h"
 
 class Store {
 	private:
 		float sensorData[SENSORS][MEASUREMENTS]; 															// 2D array to store sensor data
 		uint8_t measurementCount[SENSORS]; 																		// Array to keep track of the number of measurements for each sensor
-		float historyData[SENSORS][BASE]; 																		// 2D array to store historical data for each sensor
-		uint8_t historyIndex;
+		float historyData[SENSORS][MAX_SAVE]; 																// 2D array to store historical data for each sensor
 	public:
 		Store() {
-			initialize(); 																												// Initialize the Store class
+			initialize(); 																											// Initialize the Store class
 		};
-		void initialize(); 																													// Initialize the Store class
+		void initialize(); 																										// Initialize the Store class
 		void resetSensorData();
 		void updateSensorData(const uint8_t sensor, const float newValue);
 		void addHistoricalData();
@@ -26,21 +24,22 @@ class Store {
 	};
 
 void Store::initialize() {
-	resetSensorData(); 																												// Reset all sensor data
+	for (uint8_t sensor = 0; sensor < SENSORS; ++sensor) {
+		for (uint8_t i = 0; i < MAX_SAVE; ++i) {
+			historyData[sensor][i] = 0.0f; 																			// Reset historical data
+		}
+	}	
+	resetSensorData(); 																											// Reset all sensor data
 };
 
 void Store::resetSensorData() {
 	for (uint8_t sensor = 0; sensor < SENSORS; ++sensor) {
-		for (uint8_t i = 0; i < BASE; ++i) {
-			historyData[sensor][i] = 0.0f; 																			// Reset historical data
-		}
 		measurementCount[sensor] = 0; 																				// Reset measurement count
 		sensorData[sensor][AVERAGE] = 0.0f; 																	// Reset average value
 		sensorData[sensor][MINIMUM] = 99.9f; 																	// Reset minimum value
 		sensorData[sensor][MAXIMUM] = 0.0f; 																	// Reset maximum value
 		sensorData[sensor][ACTUAL] = 0.0f; 																		// Reset actual value
 	}
-	historyIndex = 0; 																											// Reset history index
 }
 
 void Store::updateSensorData(const uint8_t sensor, const float newValue) {
@@ -65,11 +64,11 @@ void Store::updateSensorData(const uint8_t sensor, const float newValue) {
 }
 
 void Store::addHistoricalData() {
-	if (historyIndex < BASE) {
-		for (uint8_t sensor = 0; sensor < SENSORS; ++sensor) {
-			historyData[sensor][historyIndex] = sensorData[sensor][AVERAGE]; 								// Store the average value in the history
+	for (uint8_t sensor = 0; sensor < SENSORS; ++sensor) {
+		for (uint8_t i = 1; i < MAX_SAVE; ++i) {
+			historyData[sensor][i - 1] = historyData[sensor][i]; 												// Shift historical data to the left
 		}
-		historyIndex++; 																										// Reset history index if it exceeds BASE
+		historyData[sensor][MAX_SAVE - 1] = sensorData[sensor][AVERAGE];
 	}
 }
 

@@ -5,11 +5,15 @@ Scanner scanner(store);
 Viewer viewer(store);
 Handler handler(store, scanner, viewer);
 
-void setup() {	
+void initialize() {
 	Serial.begin(115200);																										// Initialize Serial communication at 115200 baud rate
 	delay(1000); 																														// Wait for Serial to be ready
 	pinMode(BUTTON_PIN, INPUT_PULLUP); 
 	Serial.println("\nStarting Sensor System...");													// Print 	
+}
+
+void setup() {	
+	initialize(); 																													// Call the initialize function to set up the system
 }
 
 void loop() {
